@@ -68,14 +68,8 @@ module EM
           f = Fiber.current
           request_response = ainsert(*args)
           # cursor.to_a.callback{ |res| f.resume(res) }
-          request_response.callback{ |res|
-            puts "INSERT!!"
-            f.resume(res)
-          }
-          request_response.errback{ |err|
-            puts "INSERT.ERROR"
-            f.resume(err)
-          }
+          request_response.callback{ |res| f.resume(res) }
+          request_response.errback{ |err| f.resume(err) }
           Fiber.yield
         end
 
