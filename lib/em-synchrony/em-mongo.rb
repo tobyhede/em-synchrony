@@ -67,6 +67,25 @@ module EM
           Fiber.yield
         end
 
+
+        alias :ainsert :safe_insert
+        def insert(*args)
+          f = Fiber.current
+          request_response = ainsert(*args)
+          # cursor.to_a.callback{ |res| f.resume(res) }
+          request_response.callback{ |res|
+            puts "INSERT!!"
+            f.resume(res)
+          }
+          request_response.errback{ |err|
+            puts "INSERT.ERROR"
+            f.resume(err)
+          }
+          Fiber.yield
+        end
+
+
+
         # need to rewrite afind_one manually, as it calls 'find' (reasonably
         # expecting it to be what is now known as 'afind')
 
